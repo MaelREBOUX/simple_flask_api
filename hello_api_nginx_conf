@@ -1,0 +1,28 @@
+
+#-----------------------------------------------------------------------
+#               hello_api
+#-----------------------------------------------------------------------
+
+# ajouter la directive suivante dans votre fichier /etc/hosts
+# pour tester en local
+# 127.0.0.1   hello_api
+
+server {
+    listen       80;
+    server_name  hello_api ;
+
+    location / {
+        root   /data/projets/simple_flask_api/;
+        index  index.html;
+        autoindex on;
+    }
+    
+    # API
+    location = /hello { rewrite ^ /hello/; }
+    location /hello { try_files $uri @hello; }
+    location @hello {
+      include uwsgi_params;     
+      uwsgi_pass unix:/tmp/hello.sock;
+    }
+
+}

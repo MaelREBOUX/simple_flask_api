@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI instance to serve Hello API
+After=network.target
+
+[Service]
+User=root
+Group=www-data
+WorkingDirectory=/data/projets/simple_flask_api
+Environment="PATH=/data/projets/simple_flask_api//venv/bin"
+ExecStart=/data/projets/simple_flask_api/venv/bin/uwsgi --ini hello.ini
+
+[Install]
+WantedBy=multi-user.target
