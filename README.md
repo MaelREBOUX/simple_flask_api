@@ -67,9 +67,11 @@ Tester
 python3 hello.py
 ```
 
-Vérifier que l'on obtient bien un "Hello There" sur la [page http://hello_api:5000/](http://hello_api/hello/about/)
+Vérifier que l'on obtient bien un "Hello There" sur la page [http://hello_api:5000/](http://hello_api/hello/)
 
-Faire `ctrl + C` pour arrêter.
+Si on travaille sur un serveur pas accessible sur le port 5000 on peut utiliser links : ```links http://localhost:5000```. Faire q pour quitter links.
+
+Faire `ctrl + C` pour arrêter le script python.
 
 
 ## Tester uWSGI
@@ -94,34 +96,15 @@ Sortir du mode venv en tapant : ```deactivate```.
 
 Il s'agit ici de configurer un socket sépcifique qui sera démarré automatiquement au boot.
 
-```navigateur --> nginx http://hello_api/hello/ :80 --> socket unix localhost --> hellopy```
+```navigateur --> nginx http://hello_api/hello/ :80 --> socket unix localhost --> hello.py```
 
-En décodé : la route ```/hello/``` demandée à nginx sera routée vers un serveur Python local abrité derrière un socket pour servir le script python qui répondra.
+En décodé : la route ```/hello/``` demandée à nginx sera routée vers un serveur Python local abrité derrière un socket pour servir le script ```hello.py``` qui répondra.
 
-On va donc créer un démon sous system.d.
+On va donc créer un démon sous system.d en copiant le fichier ```api_hello.service```.
 
-Créer un fichier "unit" :
 
 ```bash
-sudo nano /etc/systemd/system/api_hello.service
-```
-
-avec les directives ci-dessous :
-
-```
-[Unit]
-Description=uWSGI instance to serve Hello API
-After=network.target
-
-[Service]
-User=root
-Group=www-data
-WorkingDirectory=/data/projets/simple_flask_api
-Environment="PATH=/data/projets/simple_flask_api//venv/bin"
-ExecStart=/data/projets/simple_flask_api/venv/bin/uwsgi --ini hello.ini
-
-[Install]
-WantedBy=multi-user.target
+cp api_hello.service /etc/systemd/system/
 ```
 
 On n'oublie pas de mettre les permissions au serveur web sur les fichiers :
@@ -149,7 +132,7 @@ sudo systemctl status api_hello
 
 Faire ```ll /tmp/hello*``` pour voir si le socket a bien été créé par www-data.
 
-Tester si on obtient bien toujours un "Hello There" sur la page [http://hello_api/hello/](http://hello_api/hello/about/)
+Tester si on obtient bien toujours un "Hello There" sur la page [http://hello_api/hello/](http://hello_api/hello/)
 
 On peut aussi tester [http://hello_api/hello/about/](http://hello_api/hello/about/)
 
